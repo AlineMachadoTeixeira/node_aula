@@ -21,7 +21,7 @@ exports.showCreateForm = (req, res) => {
 exports.showEditForm = async (req, res) => {
   try {
     const { id } = req.params;
-    const usuario = await UserModel.getUserById(id); // Alterado de findById() para getUserById()
+    const usuario = await UserModel.getUserById(id);
     if (!usuario) {
       return res.status(404).send("Usuário não encontrado!");
     }
@@ -38,8 +38,8 @@ exports.showEditForm = async (req, res) => {
 
 exports.create = async (req, res) => {
   try {
-    const { name, email } = req.body; // Nome dos campos conforme UserModel.js
-    await UserModel.createUser({ name, email }); // Alterado de create() para createUser()
+    const { name, email } = req.body;
+    await UserModel.createUser({ name, email });
     res.redirect("/users");
   } catch (err) {
     res.status(500).send("Erro ao criar usuário: " + err.message);
