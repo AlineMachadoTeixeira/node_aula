@@ -1,68 +1,68 @@
-const UserModel = require('../models/UserModel');
+const UserModel = require("../models/UserModel");
 
 exports.list = async (req, res) => {
   try {
-    const usuarios = await UserModel.findAll();
-    res.render('cadastrar', { title: 'Lista de Usuários', usuarios });
+    const usuarios = await UserModel.getAllUsers(); // Alterado de findAll() para getAllUsers()
+    res.render("cadastrar", { title: "Lista de Usuários", usuarios });
   } catch (err) {
-    res.status(500).send('Erro ao listar usuários: ' + err.message);
+    res.status(500).send("Erro ao listar usuários: " + err.message);
   }
 };
 
 exports.showCreateForm = (req, res) => {
-  res.render('cadastrar/form', {
-    title: 'Criar Usuário',
+  res.render("cadastrar/form", {
+    title: "Criar Usuário",
     usuario: {},
-    action: '/users',
-    method: 'POST',
+    action: "/users",
+    method: "POST",
   });
 };
 
 exports.showEditForm = async (req, res) => {
   try {
     const { id } = req.params;
-    const usuario = await UserModel.findById(id);
+    const usuario = await UserModel.getUserById(id); // Alterado de findById() para getUserById()
     if (!usuario) {
-      return res.status(404).send('Usuário não encontrado!');
+      return res.status(404).send("Usuário não encontrado!");
     }
-    res.render('cadastrar/form', {
-      title: 'Editar Usuário',
+    res.render("cadastrar/form", {
+      title: "Editar Usuário",
       usuario,
       action: `/users/${id}?_method=PUT`,
-      method: 'POST',
+      method: "POST",
     });
   } catch (err) {
-    res.status(500).send('Erro ao buscar usuário: ' + err.message);
+    res.status(500).send("Erro ao buscar usuário: " + err.message);
   }
 };
 
 exports.create = async (req, res) => {
   try {
-    const { nome, idade, email } = req.body;
-    await UserModel.create({ nome, idade, email });
-    res.redirect('/users');
+    const { name, email } = req.body; // Nome dos campos conforme UserModel.js
+    await UserModel.createUser({ name, email }); // Alterado de create() para createUser()
+    res.redirect("/users");
   } catch (err) {
-    res.status(500).send('Erro ao criar usuário: ' + err.message);
+    res.status(500).send("Erro ao criar usuário: " + err.message);
   }
 };
 
 exports.update = async (req, res) => {
   try {
     const { id } = req.params;
-    const { nome, idade, email } = req.body;
-    await UserModel.update(id, { nome, idade, email });
-    res.redirect('/users');
+    const { name, email } = req.body;
+    await UserModel.updateUser(id, { name, email }); // Alterado de update() para updateUser()
+    res.redirect("/users");
   } catch (err) {
-    res.status(500).send('Erro ao atualizar usuário: ' + err.message);
+    res.status(500).send("Erro ao atualizar usuário: " + err.message);
   }
 };
 
 exports.delete = async (req, res) => {
   try {
     const { id } = req.params;
-    await UserModel.delete(id);
-    res.redirect('/users');
+    await UserModel.deleteUser(id); // Alterado de delete() para deleteUser()
+    res.redirect("/users");
   } catch (err) {
-    res.status(500).send('Erro ao excluir usuário: ' + err.message);
+    res.status(500).send("Erro ao excluir usuário: " + err.message);
   }
 };

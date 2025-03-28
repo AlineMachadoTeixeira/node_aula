@@ -1,21 +1,44 @@
-require('dotenv').config();
-const sqlite3 = require('sqlite3').verbose();
+const oracledb = require("oracledb");
+require("dotenv").config();
 
-const db = new sqlite3.Database(process.env.SQLITE_FILE, (err) => {
-  if (err) {
-    console.error('Erro ao conectar com SQLite:', err.message);
-    return;
+async function initialize() {
+  await oracledb.createPool({
+    user: process.env.DB_USER,
+    password: process.env.DB_PASSWORD,
+    connectString: process.env.DB_CONNECTION_STRING,
+  });
+  console.log("Pool de conexões inicializado");
+}
+
+async function close() {
+  await oracledb.getPool().close();
+  console.log("Pool de conexões fechado");
+}
+
+async function execute(query, binds = [], options = {}) {
+  let connection;
+  options.outFormat = oracledb.OUT_FORMAT_OBJECT;
+
+  try {
+    connection = await oracledb.getConnection();
+    const result = await connection.execute(query, binds, options);
+    return result;
+  } catch (err) {
+    console.error(err);
+    throw err;
+  } finally {
+    if (connection) {
+      try {
+        await connection.close();
+      } catch (err) {
+        console.error(err);
+      }
+    }
   }
-  console.log(`Conectado ao SQLite: ${process.env.SQLITE_FILE}`);
-});
+}
 
-db.run(`
-  CREATE TABLE IF NOT EXISTS usuarios (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    nome TEXT,
-    idade INTEGER,
-    email TEXT
-  )
-`);
-
-module.exports = db;
+module.exports = {
+  initialize,
+  close,
+  execute,
+};

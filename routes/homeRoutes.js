@@ -1,9 +1,7 @@
-const express = require('express');
+const express = require("express");
 const router = express.Router();
-const homeController = require('../controllers/homeController');
+const homeController = require("../controllers/homeController");
 
-router.get('/', homeController.index);
-router.get('/cad', homeController.cadastrou);
-router.get('/user/:id', homeController.usuario);
+router.get("/", homeController.index);
 
 module.exports = router;
